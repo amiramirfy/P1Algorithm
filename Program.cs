@@ -140,18 +140,7 @@ namespace RequestManager
             return null;
         }
       
-         public NodeT NextNode(NodeT p)
-        {
-            if (p.rightChild != null)
-                return Minimum(p.rightChild);
-            NodeT y = p.parent;
-            while (y != null && p == y.rightChild)
-            {
-                p = y;
-                y = y.parent;
-            }
-            return y;
-        }
+
         //transplan
         public void TransPlant(NodeT p, NodeT n)
         {
@@ -395,11 +384,9 @@ namespace RequestManager
                     int c;
                     Console.WriteLine("Enter the ID ");
                     c = Convert.ToInt32(Console.ReadLine());
-                    NodeT p = new NodeT(c,"not improtant");
-                    NodeT r = tree.SearchRequest(p.ID);
-                    NodeT next = tree.NextNode(r);
-                    if (next != null)
-                        Console.WriteLine("the data of next node is " + next.ID);
+                    NodeT p = tree.SearchRequest(c);
+                    tree.DeleteRequest(p);
+                  
                 }
                 else if (key == 4)
                 {
