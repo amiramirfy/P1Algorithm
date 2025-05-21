@@ -153,9 +153,10 @@ namespace RequestManager
             if (n != null)
                 n.parent = p.parent;
         }
-        // delete a node from tree
-        public void DeleteRequest(NodeT x)
+        // delete a node from tree and max
+        public void DeleteRequest(NodeT x,MaxHeap m)
         {
+            m.DeleteRequestMaxHeap(x.ID);
             if (x.leftChild == null)
                 TransPlant(x, x.rightChild);
             if (x.rightChild == null)
@@ -193,7 +194,7 @@ namespace RequestManager
         //
         public void IncerecePriority(int id, int key)
         {
-            int count = 1;
+            int count = 0;
             foreach(var item in maxHeap)
             {
                 if(item.ID==id)
@@ -214,7 +215,7 @@ namespace RequestManager
                 if (key < maxHeap[count].priority)
                 {
                     //print an error
-                    Console.WriteLine("This is decrecing not increce next time read before selecting!!!!!");
+                    Console.WriteLine("This is decrecing not increce next time read before selecting!");
                 }
                 maxHeap[count].priority = key;
                 while (count > 1 && maxHeap[MaxHeapParentIndex(count)].priority < maxHeap[count].priority)
@@ -226,6 +227,69 @@ namespace RequestManager
                 }
             }
            
+        }
+        //
+        public void DeleteRequestMaxHeap(int id)
+        {
+            int count = 0;
+            foreach (var item in maxHeap)
+            {
+                if (item.ID == id)
+                {
+                    break;
+                }
+                else
+                {
+                    count++;
+                }
+            }
+            if (count > heapSize)
+            {
+                ;
+            }
+            else
+            {
+                maxHeap[count].priority = -1000;
+                MaxHeapify(count);
+                int count2 = 0;
+                foreach (var item in maxHeap)
+                {
+                    if (item.ID == id)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        count2++;
+                    }
+                }
+                maxHeap.RemoveAt(count2);
+                heapSize--;
+               
+            }
+           
+           
+        }
+        
+        //
+        public NodeM HighestPriority(Tree t,MaxHeap m)
+        {
+            if(heapSize<1)
+            {
+                Console.WriteLine("hichi nist");
+                return null;
+            }
+            else
+            {
+                NodeM max = m.maxHeap[1];
+                m.maxHeap[1] = m.maxHeap[heapSize];
+                heapSize--;
+                MaxHeapify(1);
+                NodeT p = new NodeT(max.ID, "not important");
+
+                t.DeleteRequest(p,m);
+                return max;
+            }
         }
         //
         public void IncereceKey(int i, int key)
@@ -245,7 +309,7 @@ namespace RequestManager
             }
         }
         public void InsertHeap(int key,int ID)
-        {
+        { 
             heapSize++;
             maxHeap.Add(new NodeM(ID,-1000));
             IncereceKey(heapSize, key);
@@ -310,10 +374,7 @@ namespace RequestManager
             }
 
         }
-        public void ProcessHighestPriorityRequest()
-        {
-
-        }
+       
     }
     class Program
     {
@@ -330,13 +391,11 @@ namespace RequestManager
                 Console.WriteLine("please choose your command: ");
                 Console.WriteLine("1: build Tree ");
                 Console.WriteLine("2: Insert to Tree and MaxHeap ");
-              
-                
                 Console.WriteLine("3: Delete a node from Tree ");
                 Console.WriteLine("4:print Maxheap ");
                   Console.WriteLine("5:increace priority by ID ");
                 Console.WriteLine("6:search tree by ID ");
-                  Console.WriteLine("7:Print Tree preorder ");
+                  Console.WriteLine("7:Print Tree preorder "); 
                 Console.WriteLine("8: Quit");
               
                 int key = Convert.ToInt32(Console.ReadLine());
@@ -385,7 +444,7 @@ namespace RequestManager
                     Console.WriteLine("Enter the ID ");
                     c = Convert.ToInt32(Console.ReadLine());
                     NodeT p = tree.SearchRequest(c);
-                    tree.DeleteRequest(p);
+                    tree.DeleteRequest(p,maxH);
                   
                 }
                 else if (key == 4)
@@ -409,8 +468,8 @@ namespace RequestManager
                      int c;
                     Console.WriteLine("Enter the ID value");
                     c = Convert.ToInt32(Console.ReadLine());
-                    NodeT p = new NodeT(c,"not important");
-                    NodeT find =tree.SearchRequest(p.ID);
+                    
+                    NodeT find =tree.SearchRequest(c);
                     Console.WriteLine("the name of id: "+find.name);
                 }
                 else if (key == 7)
